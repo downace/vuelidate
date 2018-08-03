@@ -505,6 +505,69 @@ describe('Validation plugin', () => {
     })
   })
 
+  describe('$invalidSelf', () => {
+    it('should return false when object itself is not $invalid', () => {
+      const vm = new Vue({
+        data() {
+          return {
+            nestedWithAllValids: {
+              value1: 'v1',
+              value2: 'v2'
+            },
+            nestedWithInvalids: {
+              value1: 'v1',
+              value2: 'v2'
+            }
+          }
+        },
+        validations: {
+          nestedWithAllValids: {
+            T,
+            value1: { T },
+            value2: { T }
+          },
+          nestedWithInvalids: {
+            T,
+            value1: { F },
+            value2: { T }
+          }
+        }
+      })
+      expect(vm.$v.nestedWithAllValids.$invalidSelf).to.be.false
+      expect(vm.$v.nestedWithInvalids.$invalidSelf).to.be.false
+    })
+    it('should return true when object itself is $invalid', () => {
+      const vm = new Vue({
+        data() {
+          return {
+            nestedWithAllValids: {
+              value1: 'v1',
+              value2: 'v2'
+            },
+            nestedWithInvalids: {
+              value1: 'v1',
+              value2: 'v2'
+            }
+          }
+        },
+        validations: {
+          nestedWithAllValids: {
+            F,
+            value1: { T },
+            value2: { T }
+          },
+          nestedWithInvalids: {
+            F,
+            value1: { F },
+            value2: { T }
+          }
+        }
+      })
+      expect(vm.$v.nestedWithAllValids.$invalidSelf).to.be.true
+      expect(vm.$v.nestedWithInvalids.$invalidSelf).to.be.true
+    })
+  })
+
   describe('$v.value', () => {
     describe('when validations pass', () => {
       it('should have $invalid value set to false', () => {

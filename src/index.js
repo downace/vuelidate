@@ -66,11 +66,14 @@ function makePendingAsyncVm(Vue, promise) {
 
 const validationGetters = {
   $invalid() {
-    const proxy = this.proxy
     return (
       this.nestedKeys.some((nested) => this.refProxy(nested).$invalid) ||
-      this.ruleKeys.some((rule) => !proxy[rule])
+      this.$invalidSelf
     )
+  },
+  $invalidSelf() {
+    const proxy = this.proxy
+    return this.ruleKeys.some((rule) => !proxy[rule])
   },
   $dirty() {
     if (this.dirty) {

@@ -22,6 +22,11 @@
             | when any of it's child validators specified in options returns a <strong>falsy</strong> value.
             | In case of validation groups, all grouped validators are considered.
         tr.table__tr
+          td.table__td: kbd $invalidSelf
+          td.table__td: strong boolean
+          td.table__td
+            | Indicates the state of validation for given model ignoring nested models state.
+        tr.table__tr
           td.table__td: kbd $dirty
           td.table__td: strong boolean
           td.table__td
