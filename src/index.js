@@ -66,10 +66,16 @@ function makePendingAsyncVm(Vue, promise) {
 
 const validationGetters = {
   $invalid() {
-    const proxy = this.proxy
+    const model = this.getModel()
+    const modelIsObject = typeof model === 'object' && model !== null
+    const selfInvalid = this.ruleKeys.some((rule) => !this.proxy[rule])
+    const nestedInvalid = this.nestedKeys.some(
+      (nested) => this.refProxy(nested).$invalid
+    )
+
     return (
-      this.nestedKeys.some((nested) => this.refProxy(nested).$invalid) ||
-      this.ruleKeys.some((rule) => !proxy[rule])
+      selfInvalid ||
+      ((this.isGroupValidation || modelIsObject) && nestedInvalid)
     )
   },
   $dirty() {
@@ -404,6 +410,9 @@ const getComponent = (Vue) => {
   })
 
   const GroupValidation = Validation.extend({
+    beforeCreate() {
+      this.isGroupValidation = true
+    },
     methods: {
       isNested(key) {
         return typeof this.validations[key]() !== 'undefined'

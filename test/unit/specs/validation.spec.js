@@ -736,7 +736,7 @@ describe('Validation plugin', () => {
       expect(vm.$v.list.$each[1]).to.not.exist
     })
 
-    it('should allow parent object to be non object', function() {
+    it('should not validate nested models if parent is not object', function() {
       const vm = new Vue({
         data() {
           return {
@@ -747,6 +747,7 @@ describe('Validation plugin', () => {
         },
         validations: {
           obj: {
+            noUndef,
             value: {
               noUndef
             }
@@ -756,15 +757,15 @@ describe('Validation plugin', () => {
       vm.obj = undefined
       expect(vm.$v.obj.$invalid).to.be.true
       vm.obj = null
-      expect(vm.$v.obj.$invalid).to.be.true
+      expect(vm.$v.obj.$invalid).to.be.false
       vm.obj = false
-      expect(vm.$v.obj.$invalid).to.be.true
+      expect(vm.$v.obj.$invalid).to.be.false
       vm.obj = 1
-      expect(vm.$v.obj.$invalid).to.be.true
+      expect(vm.$v.obj.$invalid).to.be.false
       vm.obj = 'string'
-      expect(vm.$v.obj.$invalid).to.be.true
+      expect(vm.$v.obj.$invalid).to.be.false
       vm.obj = function() {}
-      expect(vm.$v.obj.$invalid).to.be.true
+      expect(vm.$v.obj.$invalid).to.be.false
       vm.obj = []
       expect(vm.$v.obj.$invalid).to.be.true
       vm.obj = {}
