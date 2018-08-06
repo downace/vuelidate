@@ -68,15 +68,18 @@ const validationGetters = {
   $invalid() {
     const model = this.getModel()
     const modelIsObject = typeof model === 'object' && model !== null
-    const selfInvalid = this.ruleKeys.some((rule) => !this.proxy[rule])
     const nestedInvalid = this.nestedKeys.some(
       (nested) => this.refProxy(nested).$invalid
     )
 
     return (
-      selfInvalid ||
+      this.$invalidSelf ||
       ((this.isGroupValidation || modelIsObject) && nestedInvalid)
     )
+  },
+  $invalidSelf() {
+    const proxy = this.proxy
+    return this.ruleKeys.some((rule) => !proxy[rule])
   },
   $dirty() {
     if (this.dirty) {
