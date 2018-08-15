@@ -1,5 +1,4 @@
-import {h, patchChildren} from './vval'
-import {popParams, pushParams, withParams} from './params'
+import { h, patchChildren } from './vval'
 
 const NIL = () => null
 
@@ -38,6 +37,8 @@ const getPath = (ctx, obj, path, fallback) => {
   return typeof obj === 'undefined' ? fallback : obj
 }
 
+import { withParams, pushParams, popParams } from './params'
+
 const __isVuelidateAsyncVm = '__isVuelidateAsyncVm'
 function makePendingAsyncVm(Vue, promise) {
   const asyncVm = new Vue({
@@ -65,15 +66,10 @@ function makePendingAsyncVm(Vue, promise) {
 
 const validationGetters = {
   $invalid() {
-    const model = this.getModel()
-    const modelIsObject = typeof model === 'object' && model !== null
-    const nestedInvalid = this.nestedKeys.some(
-      (nested) => this.refProxy(nested).$invalid
-    )
-
+    const proxy = this.proxy
     return (
-      this.$invalidSelf ||
-      ((this.isGroupValidation || modelIsObject) && nestedInvalid)
+      this.nestedKeys.some((nested) => this.refProxy(nested).$invalid) ||
+      this.ruleKeys.some((rule) => !proxy[rule])
     )
   },
   $invalidSelf() {
@@ -221,7 +217,10 @@ const getComponent = (Vue) => {
         // Passed as an argument for workaround
         const model = this.getModel()
         pushParams()
-        const rawOutput = this.rule.call(this.rootModel, model, parent)
+        const parentIsObject = typeof parent === 'object' && parent !== null
+        const rawOutput = parentIsObject
+          ? this.rule.call(this.rootModel, model, parent)
+          : true
         const output = isPromise(rawOutput)
           ? makePendingAsyncVm(Vue, rawOutput)
           : rawOutput
