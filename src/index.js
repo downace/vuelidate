@@ -1,4 +1,5 @@
-import { h, patchChildren } from './vval'
+import {h, patchChildren} from './vval'
+import {popParams, pushParams, withParams} from './params'
 
 const NIL = () => null
 
@@ -37,8 +38,6 @@ const getPath = (ctx, obj, path, fallback) => {
   return typeof obj === 'undefined' ? fallback : obj
 }
 
-import { withParams, pushParams, popParams } from './params'
-
 const __isVuelidateAsyncVm = '__isVuelidateAsyncVm'
 function makePendingAsyncVm(Vue, promise) {
   const asyncVm = new Vue({
@@ -72,8 +71,7 @@ const validationGetters = {
     )
   },
   $invalidSelf() {
-    const proxy = this.proxy
-    return this.ruleKeys.some((rule) => !proxy[rule])
+    return this.ruleKeys.some((rule) => !this.proxy[rule])
   },
   $dirty() {
     if (this.dirty) {
